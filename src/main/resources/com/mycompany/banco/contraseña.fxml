@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="854.0" style="-fx-background-color: #30373e;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mycompany.banco.CambiarContrasena">
+   <children>
+      <Button fx:id="save" layoutX="382.0" layoutY="433.0" mnemonicParsing="false" onAction="#handleGuardarButton" prefHeight="47.0" prefWidth="91.0" text="Guardar">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Button>
+      <Label layoutX="291.0" layoutY="226.0" text="Nueva contraseña: " textFill="WHITE">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="287.0" layoutY="105.0" text="Contraseña antigua:" textFill="WHITE">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Button fx:id="volver" layoutX="59.0" layoutY="64.0" mnemonicParsing="false" onAction="#handleVolverButton" prefHeight="41.0" prefWidth="69.0" text="Volver">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Button>
+      <Label layoutX="291.0" layoutY="327.0" text="Verificar contraseña:" textFill="WHITE">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <PasswordField fx:id="passantigua" layoutX="292.0" layoutY="140.0" prefHeight="34.0" prefWidth="282.0" />
+      <PasswordField fx:id="newPass" layoutX="292.0" layoutY="259.0" prefHeight="34.0" prefWidth="282.0" />
+      <PasswordField fx:id="verificarPass" layoutX="286.0" layoutY="363.0" prefHeight="34.0" prefWidth="282.0" />
+   </children>
+</AnchorPane>
