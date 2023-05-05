@@ -13,7 +13,7 @@
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
-      <TextField fx:id="saldo" editable="false" layoutX="224.0" layoutY="135.0" onAction="#saldo" />
+      <TextField fx:id="saldo" editable="false" layoutX="224.0" layoutY="135.0" onAction="#handleSaldo" />
       <Label layoutX="427.0" layoutY="132.0" text="OPERACION" textFill="WHITE">
          <font>
             <Font name="System Bold" size="20.0" />

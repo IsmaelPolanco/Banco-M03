@@ -31,17 +31,17 @@ public class Login {
 
     public User currentUser; // Campo para almacenar el usuario actual
     
-    int fallos = 0;
+    int fallos = 3;
 
     public void initialize() {
-
+        
     }
 
     public Login()  {
         // Agregar usuarios permitidos
-        users.add(new User("isma", "Polanco", 10000, 50000));
-        users.add(new User("asier", "rodriguez", 400, 30000));
-        users.add(new User("unai", "gomez", 10, 200));
+        users.add(new User("isma", "isma", 10000, 50000));
+        users.add(new User("asier", "asier", 400, 30000));
+        users.add(new User("unai", "unai", 10, 200));
     }
     
     @FXML
@@ -65,15 +65,18 @@ public class Login {
           
         } else {
             System.out.println("Credenciales inválidas");
-            mensaje.setText("Error al registrar");
-            fallos++;
+            mensaje.setText("Error: Credenciales inválidas. Intentos restantes" + fallos);
+            fallos--;
             
-            if (fallos == 3) {
+            if (fallos == 0) {
                 mensaje.setText("Ha alcanzado el límite. Acceso bloqueado.");
                 btnLogin.setDisable(true);
             }
-
         } 
+    }
+
+    public List<User> getUsers() {
+        return users;
     }
 
 }

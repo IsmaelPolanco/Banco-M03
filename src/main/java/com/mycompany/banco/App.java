@@ -7,12 +7,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- * JavaFX App
- */
 public class App extends Application {
 
     private static Scene scene;
@@ -20,10 +16,10 @@ public class App extends Application {
     static String nom;
         
     static Login login;
+    public static List<User> usuarioapp;
     
     public static void sesion(User pan){
         System.out.println(pan);
-       // Login.currentUser = pan;
         login.currentUser = pan;
     }
     
@@ -51,6 +47,9 @@ public class App extends Application {
         
        login = new Login();
         launch();
+    }
+
+    public static void updateUser(User user) {
     }
 
 }

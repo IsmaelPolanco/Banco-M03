@@ -1,7 +1,4 @@
-    /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.mycompany.banco;
 
 /**
@@ -70,17 +67,30 @@ public class User {
         cuentaAhorro.setSaldoAhorro(saldoCuentaAhorro);
     }
 
-    public int getSaldo() {
-        return 0;
+    public double getSaldoTotal() {
+        return getSaldoCuentaPrincipal() + getSaldoCuentaAhorro();
+    }
+    
+    public void setSaldoTotal(double newSaldo) {
+        double saldoAhorro = Math.min(newSaldo, cuentaAhorro.getSaldoAhorro());
+        double saldoPrincipal = newSaldo - saldoAhorro;
+        cuentaAhorro.setSaldoAhorro(saldoAhorro);
+        cuentaPrincipal.setSaldo(saldoPrincipal);
     }
 
-    public void setSaldo(int newSaldo) {
+    public void ingresar(double monto) {
+        if (monto > 0)
+        cuentaPrincipal.ingresar(monto);
+        this.setSaldoCuentaPrincipal(cuentaPrincipal.getSaldo());
     }
-
-    public int getSaldoAhorro() {
-        return 0;
+    
+    public void retirar(double monto) {
+        if (monto > 0 && cuentaPrincipal.getSaldo() >= monto) {
+            cuentaPrincipal.retirar(monto);
+            this.setSaldoCuentaPrincipal(cuentaPrincipal.getSaldo());
+        } else {
+            throw new IllegalArgumentException("El monto a retirar es mayor al saldo disponible");
+        }
     }
-
-
-
+    
 }

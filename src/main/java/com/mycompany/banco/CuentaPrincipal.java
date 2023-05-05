@@ -25,13 +25,13 @@ public class CuentaPrincipal {
     private TextField operacionrealizada;
 
     @FXML
-    private RadioButton ingresar;
+    private RadioButton ingresarBilletes;
 
     @FXML
-    private RadioButton retirar;
+    private RadioButton retirarBilletes;
 
     @FXML
-    private RadioButton transferir;
+    private RadioButton transferirBilletes;
 
     @FXML
     private ToggleGroup operaciones;
@@ -39,21 +39,30 @@ public class CuentaPrincipal {
     @FXML
     private Button textoOperacion;
 
-    private Login currentUser;
+    private Billetes billetes;
 
-    private Billetes billetes; // Objeto de la clase Billetes
+    private double saldoActual;
 
-    User usuario;
+    private List<User> users;
 
     private double ingreso = 0;
 
-    private List<User> users = App.login.users;
+    User usuario;
 
-    public CuentaPrincipal(int saldoPrincipal) {
+    public CuentaPrincipal() {
     }
 
-    public void setLogin(Login login) {
-        // this.login = login;
+    public CuentaPrincipal(double saldoPrincipal) {
+        this.saldoActual = saldoPrincipal;
+        this.billetes = new Billetes(500, 200, 100, 50, 20, 10, 5);
+    }
+
+    public double getSaldo() {
+        return saldoActual;
+    }
+
+    public void setSaldo(double saldo) {
+        this.saldoActual = saldo;
     }
 
     @FXML
@@ -63,33 +72,115 @@ public class CuentaPrincipal {
 
     @FXML
     public void cerrarsesion(ActionEvent event) throws IOException {
-        // vuelve a  la vista a la página de inicio 
         App.setRoot("primary");
     }
 
     public void initialize() {
         usuario = App.login.currentUser;
-        int saldoActual = usuario.getSaldo();
+        saldoActual = usuario.getSaldoTotal();
         saldo.setText(String.valueOf(saldoActual));
         billetes = new Billetes(500, 200, 100, 50, 20, 10, 5);
+        users = App.usuarioapp;
+        actualizarUsuarioSaldo();
     }
 
     @FXML
-    private void saldo(ActionEvent event) {
-        int saldoActual = usuario.getSaldo();
+    private void handleSaldo(ActionEvent event) {
+        saldoActual = usuario.getSaldoTotal();
         saldo.setText(String.valueOf(saldoActual));
     }
 
     public void actualizarSaldo() {
-        double actualSaldo = App.login.currentUser.getSaldo();
-        double newSaldo = actualSaldo + ingreso;
-        saldo.setText("Saldo: " + newSaldo);
+        double newSaldo = saldoActual + ingreso;
+        saldoActual = newSaldo;
+        usuario.setSaldoTotal(newSaldo);
+    }
+
+    public void ingresar(double monto) {
+        if (monto > 0) {
+            ingreso = monto;
+            actualizarUsuarioSaldo();
+            System.out.println("Ingreso exitoso");
+        }
+    }
+
+    public void retirar(double monto) {
+        if (monto > 0 && saldoActual >= monto) {
+            saldoActual -= monto;
+            actualizarUsuarioSaldo();
+            System.out.println("Retiro exitoso");
+        } else {
+            System.out.println("Saldo insuficiente");
+        }
+    }
+
+    public void transferir(double monto, CuentaPrincipal cuentaDestino) {
+        if (monto > 0 && saldoActual >= monto) {
+            saldoActual = -monto;
+            cuentaDestino.ingresar(monto);
+            actualizarUsuarioSaldo();
+            System.out.println("Transferencia exitosa");
+        } else {
+            System.out.println("Saldo insuficiente para realizar una transferencia");
+        }
+    }
+
+    private void actualizarUsuarioSaldo() {
+        User currentUser = App.login.currentUser;
         for (User user : users) {
-            if (user.getUsername().equals(usuario.getUsername())) {
-                user.setSaldo((int) newSaldo);
+            if (user.getUsername().equals(currentUser.getUsername())) {
+                user.setSaldoCuentaPrincipal((int) saldoActual);
                 break;
             }
         }
+    }
+    
+
+    @FXML
+    private void handleTextoOperacion(ActionEvent event) {
+
+        User usuario = App.login.currentUser;
+        double cantidad;
+        try {
+            cantidad = Double.parseDouble(operacionrealizada.getText());
+        } catch (NumberFormatException e) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "La cantidad no es válida");
+            alert.showAndWait();
+            return;
+        }
+        if (cantidad <= 0) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Error: La cantidad ingresada debe ser mayor a cero");
+            alert.showAndWait();
+            return;
+        }
+
+        if (ingresarBilletes.isSelected()) {
+            usuario.getCuentaPrincipal().ingresar(cantidad);
+            usuario.setSaldoTotal(usuario.getSaldoTotal() + cantidad);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                    "Se ha ingresado " + cantidad + " euros en la cuenta.");
+            alert.showAndWait();
+            saldo.setText(String.valueOf(usuario.getSaldoTotal()));
+            actualizarUsuarioSaldo();
+        } else if (retirarBilletes.isSelected()) {
+            try {
+                usuario.getCuentaPrincipal().retirar(cantidad);
+                usuario.setSaldoTotal(usuario.getSaldoTotal() - cantidad);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                        "Se ha retirado " + cantidad + " euros de la cuenta.");
+                alert.showAndWait();
+                saldo.setText(String.valueOf(usuario.getSaldoTotal()));
+            } catch (IllegalArgumentException e) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, e.getMessage());
+                alert.showAndWait();
+                actualizarUsuarioSaldo();
+            }
+        }
+
+    }
+
+    public Billetes getBilletes() {
+        return billetes;
     }
 
     @FXML
@@ -133,31 +224,4 @@ public class CuentaPrincipal {
         ingreso += 5;
         operacionrealizada.setText(Double.toString(ingreso));
     }
-
-    //  textoOperacion.setDisable(true);
-    @FXML
-    private void handletextoOperacionextoOperacion(ActionEvent event) {
-        // Verifica que el usuario haya ingresado un monto
-       if (ingreso > 0) {
-            // Actualiza el saldo del usuario
-            usuario.setSaldo((int) (usuario.getSaldo() + ingreso));
-            // Actualiza el saldo mostrado en la interfaz
-            saldo.setText(String.valueOf(usuario.getSaldo()));
-            // Reinicia la variable "ingreso" a cero
-            ingreso = 0;
-            // Limpia el campo "operacionrealizada"
-            operacionrealizada.setText("");
-        } else {
-            // Muestra una alerta si el usuario no ha ingresado un monto
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Debe ingresar un monto");
-            alert.showAndWait();
-        } 
-    }
-
-	public void setSaldo(double saldoPrincipal) {
-	}
-
-    public double getSaldo() {
-        return 0;
-    }
-}
+} 
